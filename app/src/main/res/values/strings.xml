@@ -8,4 +8,11 @@
     <string name="submitted">Submitted!</string>
     <string name="add_task_title">Add task title</string>
     <string name="add_task_body">Add task body</string>
+    <string name="save">Save</string>
+    <string name="enter_your_new_username">Enter your new username</string>
+    <string name="random_text">Lorem Ipsum is simply dummy text.</string>
+    <string name="plans_design">Plans design</string>
+    <string name="elevations">elevations</string>
+    <string name="sections">sections</string>
+    <string name="settings">Settings</string>
 </resources>
