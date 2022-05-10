@@ -16,11 +16,23 @@ public class TaskDetailActivity extends AppCompatActivity {
         setContentView(R.layout.activity_task_detail);
 
         changeTaskName();
+        changeTaskBody();
+        changeTaskState();
     }
 
     private void changeTaskName() {
         TextView mTitle = findViewById(R.id.title);
         String title = getIntent().getStringExtra("title");
         mTitle.setText(title);
+    }
+    private void changeTaskBody() {
+        TextView mBody = findViewById(R.id.body);
+        String body = getIntent().getStringExtra("body");
+        mBody.setText(body);
+    }
+    private void changeTaskState() {
+        TextView mState = findViewById(R.id.state);
+        String state = getIntent().getStringExtra("state");
+        mState.setText(state);
     }
 }
