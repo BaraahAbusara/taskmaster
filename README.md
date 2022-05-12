@@ -32,3 +32,8 @@ In addition to that I added a spinner in the addTask activity for setting the ta
 ![Add task page](./screenshots/280115071_1168435083991273_6580235935301626749_n.jpg)
 ![Add task page](./screenshots/280132455_304112168577831_4152853509198637669_n.jpg)
 
+## Version 4 : lab 29 - Room 
+For this lab I learnt how to create a database with Room and how to add an entity to it and how to deal with them using DAO.  
+In this version I created a database for my application so now I am able to take tasks from the user.
+In addition to that I rendered these tasks from the database to the main activity page and I am able to send each task's data to te task details activity. 
+Nothing changed visually so no need for screenshots for this version. 

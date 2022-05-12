@@ -4,9 +4,6 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -19,17 +16,22 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+
+import java.util.List;
+
 public class MainActivity extends AppCompatActivity {
 
     public static final String EXTRA_MESSAGE = "com.example.taskmaster.MESSAGE";
     private static final String TAG = "test";
-    private Task[] tasks = new Task[]{
-            new Task("Plans","design 3 plans with furniture","New"),
-            new Task("Elevations","design all elevations","Assigned"),
-            new Task("sections","create 2 sections passing by the stairs and the main door ","Complete"),
-            new Task("Shots","Render at least 2 interior shots and 2 exterior shots","New")
-    };
-
+//    private Task[] tasks = new Task[]{
+//            new Task("Plans","design 3 plans with furniture","New"),
+//            new Task("Elevations","design all elevations","Assigned"),
+//            new Task("sections","create 2 sections passing by the stairs and the main door ","Complete"),
+//            new Task("Shots","Render at least 2 interior shots and 2 exterior shots","New")
+//    };
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,8 +56,9 @@ public class MainActivity extends AppCompatActivity {
             Intent allTasksIntent = new Intent(this, AllTasksAct.class);
             startActivity(allTasksIntent);
         });
+        List<Task> tasks = AppDatabase.getInstance(getApplicationContext()).userDao().getAllTasks();
 
-        ListView tasksList = findViewById(R.id.tasksList);
+                ListView tasksList = findViewById(R.id.tasksList);
         ArrayAdapter<Task> taskArrayAdapter = new ArrayAdapter<Task>(
                 this,
                 android.R.layout.simple_list_item_2,
@@ -69,8 +72,8 @@ public class MainActivity extends AppCompatActivity {
                 TextView title = (TextView) view.findViewById(android.R.id.text1);
                 TextView body = (TextView) view.findViewById(android.R.id.text2);
 
-                title.setText(tasks[position].getTitle());
-                body.setText(tasks[position].getBody());
+                title.setText(tasks.get(position).getTitle());
+                body.setText(tasks.get(position).getBody());
 
                 return view;
             }
@@ -81,9 +84,9 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Intent taskIntent = new Intent(getApplicationContext(),TaskDetailActivity.class);
-                taskIntent.putExtra("title",tasks[i].getTitle());
-                taskIntent.putExtra("body",tasks[i].getBody());
-                taskIntent.putExtra("state",tasks[i].getState());
+                taskIntent.putExtra("title",tasks.get(i).getTitle());
+                taskIntent.putExtra("body",tasks.get(i).getBody());
+                taskIntent.putExtra("state",tasks.get(i).getState());
                 startActivity(taskIntent);
             }
         });
