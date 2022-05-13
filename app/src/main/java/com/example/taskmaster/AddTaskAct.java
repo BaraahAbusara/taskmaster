@@ -1,16 +1,17 @@
 package com.example.taskmaster;
 
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 public class AddTaskAct extends AppCompatActivity {
 
@@ -26,7 +27,7 @@ public class AddTaskAct extends AppCompatActivity {
         Spinner taskStateSelector = findViewById(R.id.task_state_spinner);
         ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(
                 this ,
-                android.support.design.R.layout.support_simple_spinner_dropdown_item,
+                androidx.appcompat.R.layout.support_simple_spinner_dropdown_item,
                 mState
         );
         taskStateSelector.setAdapter(spinnerAdapter);
@@ -41,11 +42,25 @@ public class AddTaskAct extends AppCompatActivity {
 
             }
         });
+
         //------------------------------------------
         Button button = findViewById(R.id.button);
         button.setOnClickListener(view -> {
-            Toast.makeText(this, "Task Added!", Toast.LENGTH_SHORT).show();
-            Log.i(TAG, "onCreate: adding done");
+
+            EditText titleField = findViewById(R.id.title);
+            String title = titleField.getText().toString();
+
+            EditText bodyField = findViewById(R.id.body);
+            String body = bodyField.getText().toString();
+
+            String state = taskStateSelector.getSelectedItem().toString();
+
+            Task newTask = new Task(title,body,state);
+            Long newTaskId = AppDatabase.getInstance(getApplicationContext()).userDao().insertTask(newTask);
+
+
+            Toast.makeText(this, "Task Added : "+newTask.getBody(), Toast.LENGTH_SHORT).show();
+            Log.i(TAG, "onCreate: adding done -> "+newTask.getId());
 
         });
     }
