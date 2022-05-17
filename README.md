@@ -37,3 +37,11 @@ For this lab I learnt how to create a database with Room and how to add an entit
 In this version I created a database for my application so now I am able to take tasks from the user.
 In addition to that I rendered these tasks from the database to the main activity page and I am able to send each task's data to te task details activity. 
 Nothing changed visually so no need for screenshots for this version. 
+
+## Version 5 : lab 31 - Espresso and Polish
+
+For this lab I added UI tests for :
+- Navigating to settings activity and changing the username 
+- Rendering the username in the main activity 
+- Navigating to add tasks activity and adding a task. 
+  Nothing changed visually so no need for screenshots for this version. 
