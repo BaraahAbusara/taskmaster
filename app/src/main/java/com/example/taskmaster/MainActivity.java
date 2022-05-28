@@ -12,32 +12,42 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
-import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.amplifyframework.AmplifyException;
+import com.amplifyframework.api.aws.AWSApiPlugin;
+import com.amplifyframework.core.Amplify;
+import com.amplifyframework.datastore.AWSDataStorePlugin;
+import com.amplifyframework.datastore.generated.model.Task;
+
+import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity  {
 
     public static final String EXTRA_MESSAGE = "com.example.taskmaster.MESSAGE";
     private static final String TAG = "test";
-//    private Task[] tasks = new Task[]{
-//            new Task("Plans","design 3 plans with furniture","New"),
-//            new Task("Elevations","design all elevations","Assigned"),
-//            new Task("sections","create 2 sections passing by the stairs and the main door ","Complete"),
-//            new Task("Shots","Render at least 2 interior shots and 2 exterior shots","New")
-//    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        //------------------------------------------------------lab 32
+        try{
+            Amplify.addPlugin(new AWSDataStorePlugin());
+            Amplify.addPlugin(new AWSApiPlugin());
+            Amplify.configure(getApplicationContext());
 
-        //--------------------------------------------------------
+            Log.i(TAG, "onCreate: Initialized amplify");
+        }catch (AmplifyException e){
+            Log.i(TAG, "onCreate: could not initialize amplify");
+        }
+
+        //-------------------------------------------------------- Buttons
 
         Button settingsButton = findViewById(R.id.settings);
         settingsButton.setOnClickListener(view -> {
@@ -56,10 +66,28 @@ public class MainActivity extends AppCompatActivity {
             Intent allTasksIntent = new Intent(this, AllTasksAct.class);
             startActivity(allTasksIntent);
         });
-        List<Task> tasks = AppDatabase.getInstance(getApplicationContext()).userDao().getAllTasks();
 
-                ListView tasksList = findViewById(R.id.tasksList);
-        ArrayAdapter<Task> taskArrayAdapter = new ArrayAdapter<Task>(
+        //-----------------------------------------------------List of tasks
+//        List<Task> tasks = AppDatabase.getInstance(getApplicationContext()).userDao().getAllTasks();
+        //-------------------------------------------------------
+        List<com.amplifyframework.datastore.generated.model.Task> tasks = new ArrayList<>();
+
+        Amplify.DataStore.query(
+                com.amplifyframework.datastore.generated.model.Task.class,
+                foundTasks->{
+            while (foundTasks.hasNext())
+            {
+                com.amplifyframework.datastore.generated.model.Task curTask = foundTasks.next();
+                tasks.add(curTask);
+            }
+                },
+                notFound->{
+                    Log.i(TAG, "onCreate: can't return tasks from database");
+                }
+        );
+//------------------------------------------------------------------------------------
+        ListView tasksList = findViewById(R.id.tasksList);
+        ArrayAdapter<com.amplifyframework.datastore.generated.model.Task> taskArrayAdapter = new ArrayAdapter<Task>(
                 this,
                 android.R.layout.simple_list_item_2,
                 android.R.id.text1,
@@ -86,7 +114,7 @@ public class MainActivity extends AppCompatActivity {
                 Intent taskIntent = new Intent(getApplicationContext(),TaskDetailActivity.class);
                 taskIntent.putExtra("title",tasks.get(i).getTitle());
                 taskIntent.putExtra("body",tasks.get(i).getBody());
-                taskIntent.putExtra("state",tasks.get(i).getState());
+                taskIntent.putExtra("state",tasks.get(i).getStatus());
                 startActivity(taskIntent);
             }
         });
@@ -132,29 +160,5 @@ public class MainActivity extends AppCompatActivity {
         mUsernameHeader.setText(sharedPreferences.getString(Settings.USERNAME,"My")+ " Tasks");
         Log.i(TAG, "Main ->setUsername : "+mUsernameHeader);
     }
-//    Hard coded tasks buttons --------------------------
 
-    //        Button plansDesignButton =  findViewById(R.id.plansDesign);
-//        plansDesignButton.setOnClickListener(view -> {
-//
-//            Intent plansDesignIntent = new Intent(this,TaskDetailActivity.class);
-//            plansDesignIntent.putExtra("title","Plans Design");
-//            startActivity(plansDesignIntent);
-//        });
-//
-//        Button elevationsButton =  findViewById(R.id.elevations);
-//        elevationsButton.setOnClickListener(view -> {
-//
-//            Intent elevationsIntent = new Intent(this,TaskDetailActivity.class);
-//            elevationsIntent.putExtra("title","Elevations");
-//            startActivity(elevationsIntent);
-//        });
-//
-//        Button sectionsButton =  findViewById(R.id.sections);
-//        sectionsButton.setOnClickListener(view -> {
-//
-//            Intent sectionsIntent = new Intent(this,TaskDetailActivity.class);
-//            sectionsIntent.putExtra("title","Sections");
-//            startActivity(sectionsIntent);
-//        });
 }

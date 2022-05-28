@@ -9,6 +9,7 @@ public class Task {
     @PrimaryKey(autoGenerate = true)
     private int id ;
 
+
     String title , body , state ;
     //The state should be one of “new”, “assigned”, “in progress”, or “complete”-> solved by using the spinner
     public Task(String title, String body, String state) {

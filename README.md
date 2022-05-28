@@ -45,3 +45,8 @@ For this lab I added UI tests for :
 - Rendering the username in the main activity 
 - Navigating to add tasks activity and adding a task. 
   Nothing changed visually so no need for screenshots for this version. 
+  
+## Version 6 : lab 32 - Amplify and DynamoDB
+
+In this lab I created an AWS account and installed the Amplify CLI and connected my application with amplify and DynamoDB to save my data in instead of Room.
+ 
