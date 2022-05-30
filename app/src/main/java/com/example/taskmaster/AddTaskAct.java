@@ -32,31 +32,30 @@ public class AddTaskAct extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_task);
 
-        configureAmplify();
-
-
+//        configureAmplify();
 
         //------------------------------------spinner
-        final String[] mState = new String[]{"New", "Assigned", "In progress", "complete"};
 
-        Spinner taskStateSelector = findViewById(R.id.task_state_spinner);
-        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(
-                this ,
-                androidx.appcompat.R.layout.support_simple_spinner_dropdown_item,
-                mState
-        );
-        taskStateSelector.setAdapter(spinnerAdapter);
-        taskStateSelector.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+            final String[] mState = new String[]{"New", "Assigned", "In progress", "complete"};
 
-            }
+            Spinner taskStateSelector = findViewById(R.id.task_state_spinner);
+            ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(
+                    this,
+                    androidx.appcompat.R.layout.support_simple_spinner_dropdown_item,
+                    mState
+            );
+            taskStateSelector.setAdapter(spinnerAdapter);
+            taskStateSelector.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
 
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
+                }
 
-            }
-        });
+                @Override
+                public void onNothingSelected(AdapterView<?> adapterView) {
+
+                }
+            });
 
         //------------------------------------------saving the task
         Button button = findViewById(R.id.button);
@@ -78,53 +77,62 @@ public class AddTaskAct extends AppCompatActivity {
                     .status(state)
                     .build();
 
+            Amplify.API.query(ModelMutation.create(newTask),
+                    success-> Log.i(TAG, "query created"),
+                    error -> Log.e(TAG,"Error",error)
+            );
+
             // save the task locally
             Amplify.DataStore.save(
                     newTask,
                     success -> {
-                        handler = new Handler(Looper.getMainLooper(),msg -> {
-                            Toast.makeText(getApplicationContext(), "Task Added : "+newTask.getTitle(), Toast.LENGTH_SHORT).show();
-                            return true;
-                        });
-
+                        Log.i(TAG, "onCreate: saving in datastore succeed ");
                     } ,
                     fail->{
-                        handler = new Handler(Looper.getMainLooper(),msg -> {
-                            Toast.makeText(getApplicationContext(), "Task Failed to be Added", Toast.LENGTH_SHORT).show();
-                            return true;
-                        });
+                        Log.i(TAG, "onCreate: saving in datastore failed ");
                     }
 
+            );
+
+            // saves to the backend
+            Amplify.API.mutate(ModelMutation.create(newTask)
+                    , success -> {
+                        Log.i(TAG, "onCreate: saving in API mutate");
+
+                    }
+                    , fail -> {
+                        Log.i(TAG, "onCreate: NOT saving in API mutate");
+
+                    }
+            );
+
+            Amplify.DataStore.observe(com.amplifyframework.datastore.generated.model.Task.class,
+                    started -> {
+                        Log.i(TAG, "onCreate: observation began");
+                    },
+                    change -> {
+                        Log.i(TAG, change.item().toString());
+
+                        Bundle bundle = new Bundle();
+                        bundle.putString("data",change.item().toString());
+                        Message message = new Message();
+                        message.setData(bundle);
+
+                        handler.sendMessage(message);
+                    },
+                    failure -> {
+                        Log.e(TAG, "onCreate: Observation failed");
+                    },
+                    () -> {
+                        Log.i(TAG, "onCreate: Observation complete");
+                    }
             );
 
             Log.i(TAG, "onCreate: adding done -> "+newTask.getId());
 
         });
 
-        // saves to the backend
-//            Amplify.API.mutate(ModelMutation.create(newTask), success -> {}, fail -> {});
 
-        Amplify.DataStore.observe(com.amplifyframework.datastore.generated.model.Task.class,
-                started -> {
-                    Log.i(TAG, "onCreate: observation began");
-                },
-                change -> {
-                    Log.i(TAG, change.item().toString());
-
-                    Bundle bundle = new Bundle();
-                    bundle.putString("data",change.item().toString());
-                    Message message = new Message();
-                    message.setData(bundle);
-
-                    handler.sendMessage(message);
-                },
-                failure -> {
-                    Log.e(TAG, "onCreate: Observation failed");
-                },
-                () -> {
-                    Log.i(TAG, "onCreate: Observation complete");
-                }
-        );
 
     }
 
