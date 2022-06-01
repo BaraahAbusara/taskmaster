@@ -133,11 +133,8 @@ public class MainActivity extends AppCompatActivity  {
                     }
                 },
                 error -> {
-                    Log.e(TAG, "Could not save task to API", error);
                 });
 
-
-        Log.i(TAG, "tasks list from onResume");
     }
 
     @Override
@@ -175,7 +172,6 @@ public class MainActivity extends AppCompatActivity  {
                     }
                 },
                     error -> {
-                        Log.e(TAG, "Could not save task to API", error);
                     });
 
 
@@ -186,8 +182,6 @@ public class MainActivity extends AppCompatActivity  {
         TextView mTeamName = findViewById(R.id.team_name);
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         mTeamName.setText(sharedPreferences.getString(Settings.TEAM_NAME,"All")+ " Tasks");
-        Log.i(TAG, "Main ->changeTeamName : "+mTeamName);
-
     }
 
     private void changeUsername(){
@@ -195,7 +189,6 @@ public class MainActivity extends AppCompatActivity  {
         TextView mUsernameHeader = findViewById(R.id.usernameHeader);
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         mUsernameHeader.setText(sharedPreferences.getString(Settings.USERNAME,"My")+ " Tasks");
-        Log.i(TAG, "Main ->setUsername : "+mUsernameHeader);
     }
 
     private List<com.amplifyframework.datastore.generated.model.Task> findTasksAPI (String teamId){
@@ -221,7 +214,6 @@ public class MainActivity extends AppCompatActivity  {
                     }
                     },
                 notFound->{
-                    Log.i(TAG, "onCreate: can't find team in database");
                 });
     return tasks;
     }
@@ -240,7 +232,6 @@ public class MainActivity extends AppCompatActivity  {
 
                 },
                 notFound->{
-                    Log.i(TAG, "onCreate: can't return tasks from database");
                 }
         );
         return tasks ;
@@ -252,9 +243,7 @@ public class MainActivity extends AppCompatActivity  {
             Amplify.addPlugin(new AWSDataStorePlugin());
             Amplify.configure(getApplicationContext());
 
-            Log.i(TAG, "Initialized Amplify");
         } catch (AmplifyException e) {
-            Log.e(TAG, "Could not initialize Amplify", e);
         }
     }
 
