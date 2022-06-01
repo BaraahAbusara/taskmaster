@@ -9,4 +9,9 @@ type Task @model {
   status: String!
 }
 
+type Team @model {
+  id: ID!  @primaryKey
+  name: String!
+  tasks: [Task] @hasMany
+}
 

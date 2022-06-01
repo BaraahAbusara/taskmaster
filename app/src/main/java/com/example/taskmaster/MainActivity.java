@@ -27,6 +27,7 @@ import com.amplifyframework.api.graphql.model.ModelQuery;
 import com.amplifyframework.core.Amplify;
 import com.amplifyframework.datastore.AWSDataStorePlugin;
 import com.amplifyframework.datastore.generated.model.Task;
+import com.amplifyframework.datastore.generated.model.Team;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -65,9 +66,6 @@ public class MainActivity extends AppCompatActivity  {
             startActivity(allTasksIntent);
         });
 
-//        showTasksList();
-//        Log.i(TAG, "tasks list from onCreate");
-
     }
 
     @Override
@@ -79,47 +77,65 @@ public class MainActivity extends AppCompatActivity  {
     protected void onResume() {
         super.onResume();
         changeUsername();
-//        showTasksList();
-        handler = new Handler(Looper.getMainLooper() , msg -> {
+        changeTeamName();
+        //printing tasks
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        String teamName = sharedPreferences.getString(Settings.TEAM_NAME,"All");
 
-            ListView tasksList = findViewById(R.id.tasksList);
-            ArrayAdapter<com.amplifyframework.datastore.generated.model.Task> taskArrayAdapter = new ArrayAdapter<Task>(
-                    getApplicationContext(),
-                    android.R.layout.simple_list_item_2,
-                    android.R.id.text1,
-                    tasks
-            ) {
-                @NonNull
-                @Override
-                public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-                    View view = super.getView(position, convertView, parent);
-                    TextView title = (TextView) view.findViewById(android.R.id.text1);
-                    TextView body = (TextView) view.findViewById(android.R.id.text2);
+        Amplify.API.query(ModelQuery
+                        .list(Team.class, Team.NAME.eq(teamName)),
+                success-> {
+                    for (Team curTeam :
+                            success.getData()) {
+                        //teamId = curTeam.getId();
+//                        ---------------------------------------------
+                        //         take from the API
+                        tasks = findTasksAPI(curTeam.getId());
 
-                    title.setText(tasks.get(position).getTitle());
-                    body.setText(tasks.get(position).getBody());
+                        // handler for showing tasks list from the API
+                        handler = new Handler(Looper.getMainLooper() , msg -> {
 
-                    return view;
-                }
-            };
-            tasksList.setAdapter(taskArrayAdapter);
+                            ListView tasksList = findViewById(R.id.tasksList);
+                            ArrayAdapter<com.amplifyframework.datastore.generated.model.Task> taskArrayAdapter = new ArrayAdapter<Task>(
+                                    getApplicationContext(),
+                                    android.R.layout.simple_list_item_2,
+                                    android.R.id.text1,
+                                    tasks
+                            ) {
+                                @NonNull
+                                @Override
+                                public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+                                    View view = super.getView(position, convertView, parent);
+                                    TextView title = (TextView) view.findViewById(android.R.id.text1);
+                                    TextView body = (TextView) view.findViewById(android.R.id.text2);
 
-            tasksList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                    Intent taskIntent = new Intent(getApplicationContext(),TaskDetailActivity.class);
-                    taskIntent.putExtra("title",tasks.get(i).getTitle());
-                    taskIntent.putExtra("body",tasks.get(i).getBody());
-                    taskIntent.putExtra("state",tasks.get(i).getStatus());
-                    startActivity(taskIntent);
-                }
-            });
+                                    title.setText(tasks.get(position).getTitle());
+                                    body.setText(tasks.get(position).getBody());
 
-            return true  ;
+                                    return view;
+                                }
+                            };
+                            tasksList.setAdapter(taskArrayAdapter);
 
-        });
-//         take from the API
-        tasks = findTasksAPI();
+                            tasksList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                                @Override
+                                public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                                    Intent taskIntent = new Intent(getApplicationContext(),TaskDetailActivity.class);
+                                    taskIntent.putExtra("title",tasks.get(i).getTitle());
+                                    taskIntent.putExtra("body",tasks.get(i).getBody());
+                                    taskIntent.putExtra("state",tasks.get(i).getStatus());
+                                    startActivity(taskIntent);
+                                }
+                            });
+                            return true  ;
+                        });
+//                        --------------------------------------------- picking tasks and rendering  them
+                    }
+                },
+                error -> {
+                    Log.e(TAG, "Could not save task to API", error);
+                });
+
 
         Log.i(TAG, "tasks list from onResume");
     }
@@ -146,6 +162,34 @@ public class MainActivity extends AppCompatActivity  {
 
     @SuppressLint("SetTextI18n")
 
+    private void findTeamId(){
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        String teamName = sharedPreferences.getString(Settings.TEAM_NAME,"All");
+        String[] teamId = new String[1] ;
+        Amplify.API.query(ModelQuery
+                        .list(Team.class, Team.NAME.eq(teamName)),
+                success-> {
+                    for (Team curTeam :
+                            success.getData()) {
+                        teamId[0] = curTeam.getId();
+                    }
+                },
+                    error -> {
+                        Log.e(TAG, "Could not save task to API", error);
+                    });
+
+
+    }
+
+    private void  changeTeamName(){
+        //        receive the team name from settings
+        TextView mTeamName = findViewById(R.id.team_name);
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        mTeamName.setText(sharedPreferences.getString(Settings.TEAM_NAME,"All")+ " Tasks");
+        Log.i(TAG, "Main ->changeTeamName : "+mTeamName);
+
+    }
+
     private void changeUsername(){
 //        receive the username from settings
         TextView mUsernameHeader = findViewById(R.id.usernameHeader);
@@ -153,15 +197,20 @@ public class MainActivity extends AppCompatActivity  {
         mUsernameHeader.setText(sharedPreferences.getString(Settings.USERNAME,"My")+ " Tasks");
         Log.i(TAG, "Main ->setUsername : "+mUsernameHeader);
     }
-    private List<com.amplifyframework.datastore.generated.model.Task> findTasksAPI (){
 
+    private List<com.amplifyframework.datastore.generated.model.Task> findTasksAPI (String teamId){
         Amplify.API.query(
                 ModelQuery.list(Task.class),
                 success -> {
                     tasks.clear();
+                    ArrayList <Task> allTasks = new ArrayList<>();
+                    Log.i(TAG, "findTasksAPI: ->"+teamId);
+
                     if (success.hasData()) {
                         for (Task task : success.getData()) {
-                            tasks.add(task);
+                            if(task.getTeamTasksId()!=null)
+                            if(task.getTeamTasksId().equals(teamId))
+                                tasks.add(task);
                         }
                         Bundle bundle = new Bundle();
                         bundle.putString("data","Done");
@@ -169,20 +218,15 @@ public class MainActivity extends AppCompatActivity  {
                         message.setData(bundle);
                         handler.sendMessage(message);
 
-                        Log.i(TAG, "showTasksList: "+tasks);
                     }
                     },
                 notFound->{
-                    Log.i(TAG, "onCreate: can't return tasks from database");
-                }
-        );
-
+                    Log.i(TAG, "onCreate: can't find team in database");
+                });
     return tasks;
-
     }
 
-
-        private List<com.amplifyframework.datastore.generated.model.Task> findTasksDataStore (){
+    private List<com.amplifyframework.datastore.generated.model.Task> findTasksDataStore (){
         List<com.amplifyframework.datastore.generated.model.Task> tasks = new ArrayList<>();
 
         Amplify.DataStore.query(
@@ -201,8 +245,6 @@ public class MainActivity extends AppCompatActivity  {
         );
         return tasks ;
     }
-
-
 
     private void configureAmplify() {
         try {

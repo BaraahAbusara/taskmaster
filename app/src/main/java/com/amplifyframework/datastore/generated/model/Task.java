@@ -24,12 +24,14 @@ public final class Task implements Model {
   public static final QueryField TITLE = field("Task", "title");
   public static final QueryField BODY = field("Task", "body");
   public static final QueryField STATUS = field("Task", "status");
+  public static final QueryField TEAM_TASKS_ID = field("Task", "teamTasksId");
   private final @ModelField(targetType="ID", isRequired = true) String id;
   private final @ModelField(targetType="String", isRequired = true) String title;
   private final @ModelField(targetType="String", isRequired = true) String body;
   private final @ModelField(targetType="String", isRequired = true) String status;
   private @ModelField(targetType="AWSDateTime", isReadOnly = true) Temporal.DateTime createdAt;
   private @ModelField(targetType="AWSDateTime", isReadOnly = true) Temporal.DateTime updatedAt;
+  private final @ModelField(targetType="ID") String teamTasksId;
   public String getId() {
       return id;
   }
@@ -54,11 +56,16 @@ public final class Task implements Model {
       return updatedAt;
   }
   
-  private Task(String id, String title, String body, String status) {
+  public String getTeamTasksId() {
+      return teamTasksId;
+  }
+  
+  private Task(String id, String title, String body, String status, String teamTasksId) {
     this.id = id;
     this.title = title;
     this.body = body;
     this.status = status;
+    this.teamTasksId = teamTasksId;
   }
   
   @Override
@@ -74,7 +81,8 @@ public final class Task implements Model {
               ObjectsCompat.equals(getBody(), task.getBody()) &&
               ObjectsCompat.equals(getStatus(), task.getStatus()) &&
               ObjectsCompat.equals(getCreatedAt(), task.getCreatedAt()) &&
-              ObjectsCompat.equals(getUpdatedAt(), task.getUpdatedAt());
+              ObjectsCompat.equals(getUpdatedAt(), task.getUpdatedAt()) &&
+              ObjectsCompat.equals(getTeamTasksId(), task.getTeamTasksId());
       }
   }
   
@@ -87,6 +95,7 @@ public final class Task implements Model {
       .append(getStatus())
       .append(getCreatedAt())
       .append(getUpdatedAt())
+      .append(getTeamTasksId())
       .toString()
       .hashCode();
   }
@@ -100,7 +109,8 @@ public final class Task implements Model {
       .append("body=" + String.valueOf(getBody()) + ", ")
       .append("status=" + String.valueOf(getStatus()) + ", ")
       .append("createdAt=" + String.valueOf(getCreatedAt()) + ", ")
-      .append("updatedAt=" + String.valueOf(getUpdatedAt()))
+      .append("updatedAt=" + String.valueOf(getUpdatedAt()) + ", ")
+      .append("teamTasksId=" + String.valueOf(getTeamTasksId()))
       .append("}")
       .toString();
   }
@@ -122,6 +132,7 @@ public final class Task implements Model {
       id,
       null,
       null,
+      null,
       null
     );
   }
@@ -130,7 +141,8 @@ public final class Task implements Model {
     return new CopyOfBuilder(id,
       title,
       body,
-      status);
+      status,
+      teamTasksId);
   }
   public interface TitleStep {
     BodyStep title(String title);
@@ -150,6 +162,7 @@ public final class Task implements Model {
   public interface BuildStep {
     Task build();
     BuildStep id(String id);
+    BuildStep teamTasksId(String teamTasksId);
   }
   
 
@@ -158,6 +171,7 @@ public final class Task implements Model {
     private String title;
     private String body;
     private String status;
+    private String teamTasksId;
     @Override
      public Task build() {
         String id = this.id != null ? this.id : UUID.randomUUID().toString();
@@ -166,7 +180,8 @@ public final class Task implements Model {
           id,
           title,
           body,
-          status);
+          status,
+          teamTasksId);
     }
     
     @Override
@@ -190,6 +205,12 @@ public final class Task implements Model {
         return this;
     }
     
+    @Override
+     public BuildStep teamTasksId(String teamTasksId) {
+        this.teamTasksId = teamTasksId;
+        return this;
+    }
+    
     /** 
      * @param id id
      * @return Current Builder instance, for fluent method chaining
@@ -202,11 +223,12 @@ public final class Task implements Model {
   
 
   public final class CopyOfBuilder extends Builder {
-    private CopyOfBuilder(String id, String title, String body, String status) {
+    private CopyOfBuilder(String id, String title, String body, String status, String teamTasksId) {
       super.id(id);
       super.title(title)
         .body(body)
-        .status(status);
+        .status(status)
+        .teamTasksId(teamTasksId);
     }
     
     @Override
@@ -222,6 +244,11 @@ public final class Task implements Model {
     @Override
      public CopyOfBuilder status(String status) {
       return (CopyOfBuilder) super.status(status);
+    }
+    
+    @Override
+     public CopyOfBuilder teamTasksId(String teamTasksId) {
+      return (CopyOfBuilder) super.teamTasksId(teamTasksId);
     }
   }
   
