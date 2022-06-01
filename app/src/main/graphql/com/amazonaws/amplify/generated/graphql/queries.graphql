@@ -7,6 +7,7 @@ query GetTask($id: ID!) {
     status
     createdAt
     updatedAt
+    teamTasksId
   }
 }
 query ListTasks(
@@ -20,6 +21,53 @@ query ListTasks(
       title
       body
       status
+      createdAt
+      updatedAt
+      teamTasksId
+    }
+    nextToken
+  }
+}
+query GetTeam($id: ID!) {
+  getTeam(id: $id) {
+    id
+    name
+    tasks {
+      items {
+        id
+        title
+        body
+        status
+        createdAt
+        updatedAt
+        teamTasksId
+      }
+      nextToken
+    }
+    createdAt
+    updatedAt
+  }
+}
+query ListTeams(
+  $id: ID
+  $filter: ModelTeamFilterInput
+  $limit: Int
+  $nextToken: String
+  $sortDirection: ModelSortDirection
+) {
+  listTeams(
+    id: $id
+    filter: $filter
+    limit: $limit
+    nextToken: $nextToken
+    sortDirection: $sortDirection
+  ) {
+    items {
+      id
+      name
+      tasks {
+        nextToken
+      }
       createdAt
       updatedAt
     }

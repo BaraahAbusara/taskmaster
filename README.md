@@ -49,4 +49,13 @@ For this lab I added UI tests for :
 ## Version 6 : lab 32 - Amplify and DynamoDB
 
 In this lab I created an AWS account and installed the Amplify CLI and connected my application with amplify and DynamoDB to save my data in instead of Room.
- 
+
+## Version 7 : lab 33 - Related Data
+
+For this lab I Created a second entity for a team, which has a name and a list of tasks. Updated my tasks to be owned by a team.
+In the settings activity the user can specify the team he/she belongs to.  
+![settings with team](./screenshots/settingsWithTeam.jpg)  
+So, in the main activity they will see only tasks that belong to their team. 
+![main with team](./screenshots/homewithteamtasks.jpg)  
+In the addTask activity the user now have to specify what team the added task belongs to .   
+![add task with team](./screenshots/addTaskTeam.jpg) 
