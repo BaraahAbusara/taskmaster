@@ -78,8 +78,6 @@ public class Settings extends AppCompatActivity {
         SharedPreferences.Editor preferenceEditor = sharedPreferences.edit();
         //save
         preferenceEditor.putString(USERNAME,username);
-        Log.i(TAG, "onCreate: set username "+username);
-
         preferenceEditor.apply();
     }
 
@@ -90,8 +88,6 @@ public class Settings extends AppCompatActivity {
         SharedPreferences.Editor preferenceEditor = sharedPreferences.edit();
         //save
         preferenceEditor.putString(TEAM_NAME,teamName);
-        Log.i(TAG, "onCreate: set teamName "+teamName);
-
         preferenceEditor.apply();
     }
 

@@ -131,61 +131,30 @@ public class AddTaskAct extends AppCompatActivity {
                                     .build();
 
                             Amplify.DataStore.save(newTask,
-                                    saved -> Log.i(TAG, "Saved item: " + newTask.getTitle()),
-                                    notSaved -> Log.e(TAG, "Could not save item to DataStore", notSaved)
+                                    saved -> {},
+                                    notSaved ->{}
                             );
 
                             Amplify.API.mutate(
                                     ModelMutation.create(newTask),
-                                    taskSaved-> {
-                                        Log.i(TAG, "Saved task: " + taskSaved.getData().getTeamTasksId());
-
-//                    Bundle bundle = new Bundle();
-//                    bundle.putString(TEAM_ID, taskSaved.getData().getTeamTasksId());
-//
-//                    Message message = new Message();
-//                    message.setData(bundle);
-//
-//                    handler.sendMessage(message);
-                                    },
-                                    error -> {
-                                        Log.e(TAG, "Could not save task to API", error);
-                                    }
+                                    taskSaved-> { },
+                                    error -> { }
                             );
-
-
-
-
                         }
-                        Log.i(TAG, "onCreate: looking for ->"+success.getData().getItems());
-
-                        Log.i(TAG, "onCreate: team is found");
                     },
                     Fail->{
-                        Log.i(TAG, "onCreate: can't find team");
                     }
 
             );
 
             Amplify.DataStore.observe(com.amplifyframework.datastore.generated.model.Task.class,
                     started -> {
-                        Log.i(TAG, "onCreate: observation began");
                     },
                     change -> {
-                        Log.i(TAG, change.item().toString());
-
-//                        Bundle bundle = new Bundle();
-//                        bundle.putString("data",change.item().toString());
-//                        Message message = new Message();
-//                        message.setData(bundle);
-//
-//                        handler.sendMessage(message);
                     },
                     failure -> {
-                        Log.e(TAG, "onCreate: Observation failed");
                     },
                     () -> {
-                        Log.i(TAG, "onCreate: Observation complete");
                     }
             );
 
@@ -245,10 +214,8 @@ public class AddTaskAct extends AppCompatActivity {
         Amplify.API.mutate(
                 ModelMutation.create(team),
                 success->{
-                    Log.i(TAG, "saveTeamInAPI: Team saved");
                 },
                 fail->{
-                    Log.i(TAG, "saveTeamInAPI: failed to save the team");
                 });
     }
 
@@ -270,25 +237,15 @@ public class AddTaskAct extends AppCompatActivity {
                 .build();
 
         Amplify.DataStore.save(newTask,
-                success -> Log.i(TAG, "Saved item: " + success.item().getTitle()),
-                error -> Log.e(TAG, "Could not save item to DataStore", error)
+                success ->{},
+                error -> {}
         );
 
         Amplify.API.mutate(
                 ModelMutation.create(newTask),
                 taskSaved-> {
-                    Log.i(TAG, "Saved task: " + taskSaved.getData().getTeamTasksId());
-
-//                    Bundle bundle = new Bundle();
-//                    bundle.putString(TEAM_ID, taskSaved.getData().getTeamTasksId());
-//
-//                    Message message = new Message();
-//                    message.setData(bundle);
-//
-//                    handler.sendMessage(message);
                 },
                 error -> {
-                    Log.e(TAG, "Could not save task to API", error);
                 }
         );
 
