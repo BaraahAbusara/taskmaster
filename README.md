@@ -59,3 +59,15 @@ So, in the main activity they will see only tasks that belong to their team.
 ![main with team](./screenshots/homewithteamtasks.jpg)  
 In the addTask activity the user now have to specify what team the added task belongs to .   
 ![add task with team](./screenshots/addTaskTeam.jpg) 
+
+## Version 8 : lab 36 - Cognito
+
+In this lab I allowed users to sign up , log in and log out using Cognito.
+![signup](./screenshots/sign_up.png)
+After signing up the user will receive a verification code to his email and will be navigated to verification page.  
+![verification](./screenshots/verify.png)
+![verificationEmail](./screenshots/verifyingCode.jpg)
+After verifying the email address the user will be navigated to the sign in page to sign in using their username and password.
+![sign in](./screenshots/sign_in.png)
+I also added Log out button in the menu in the navigation bar .
+![logout Button](./screenshots/logout.png)

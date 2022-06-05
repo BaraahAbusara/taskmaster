@@ -19,5 +19,20 @@
     <string name="set_task_state">Set task state</string>
     <string name="pick_your_team">Pick your team</string>
     <string name="teamname">TeamName</string>
+    <string name="title_activity_login">LoginActivity</string>
+    <string name="title_activity_signup">SignUpActivity</string>
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password</string>
+    <string name="action_sign_in"> Sign in </string>
+    <string name="action_sign_up">Sign up</string>
+    <string name="action_sign_in_short">Sign in</string>
+    <string name="welcome">"Welcome !"</string>
+    <string name="invalid_username">Not a valid username</string>
+    <string name="invalid_password">Password must be >5 characters</string>
+    <string name="login_failed">"Login failed"</string>
+    <string name="sign_up_now">Don\'t have an account? SIGN UP NOW !</string>
+    <string name="username">Username</string>
+    <string name="enter_the_verification_code">Enter the verification code</string>
+    <string name="logout">Logout</string>
 
 </resources>
