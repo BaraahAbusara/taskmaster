@@ -1,31 +1,19 @@
 package com.example.taskmaster;
 
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
-import android.os.Message;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.amplifyframework.AmplifyException;
-import com.amplifyframework.api.aws.AWSApiPlugin;
 import com.amplifyframework.api.graphql.model.ModelMutation;
 import com.amplifyframework.api.graphql.model.ModelQuery;
 import com.amplifyframework.core.Amplify;
-import com.amplifyframework.datastore.AWSDataStorePlugin;
-import com.amplifyframework.datastore.generated.model.Task;
 import com.amplifyframework.datastore.generated.model.Team;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class AddTaskAct extends AppCompatActivity {
     public static final String TEAM_ID = "teamId";
@@ -69,19 +57,7 @@ public class AddTaskAct extends AppCompatActivity {
         );
 
         taskTeamSelector.setAdapter(teamSpinnerAdapter);
-        taskTeamSelector.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
 
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
-            }
-        });
-
-//        setStateSpinner();
         final String[] mState = new String[]{"New", "Assigned", "In progress", "complete"};
 
         Spinner taskStateSelector = findViewById(R.id.task_state_spinner);
@@ -103,6 +79,7 @@ public class AddTaskAct extends AppCompatActivity {
             }
         });
 
+
         Button button = findViewById(R.id.button);
 
         //find the team
@@ -113,14 +90,12 @@ public class AddTaskAct extends AppCompatActivity {
                     success->{
                         for (Team curTeam :
                                 success.getData()) {
-//                                        saveTaskToAPI(curTeam);
                             EditText titleField = findViewById(R.id.title);
                             String title = titleField.getText().toString();
 
                             EditText bodyField = findViewById(R.id.body);
                             String body = bodyField.getText().toString();
 
-//                            taskStateSelector = findViewById(R.id.task_state_spinner);
                             String state = taskStateSelector.getSelectedItem().toString();
 
                             com.amplifyframework.datastore.generated.model.Task newTask = com.amplifyframework.datastore.generated.model.Task.builder()
@@ -147,16 +122,6 @@ public class AddTaskAct extends AppCompatActivity {
 
             );
 
-            Amplify.DataStore.observe(com.amplifyframework.datastore.generated.model.Task.class,
-                    started -> {
-                    },
-                    change -> {
-                    },
-                    failure -> {
-                    },
-                    () -> {
-                    }
-            );
 
         });
     }
@@ -199,12 +164,10 @@ public class AddTaskAct extends AppCompatActivity {
         taskStateSelector.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
-
             }
         });
     }

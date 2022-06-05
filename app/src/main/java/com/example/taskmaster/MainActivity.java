@@ -3,12 +3,14 @@ package com.example.taskmaster;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.preference.PreferenceManager;
-import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -24,6 +26,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.amplifyframework.AmplifyException;
 import com.amplifyframework.api.aws.AWSApiPlugin;
 import com.amplifyframework.api.graphql.model.ModelQuery;
+import com.amplifyframework.auth.cognito.AWSCognitoAuthPlugin;
 import com.amplifyframework.core.Amplify;
 import com.amplifyframework.datastore.AWSDataStorePlugin;
 import com.amplifyframework.datastore.generated.model.Task;
@@ -38,6 +41,9 @@ public class MainActivity extends AppCompatActivity  {
     private static final String TAG = "test";
     private Handler handler;
     List<com.amplifyframework.datastore.generated.model.Task> tasks= new ArrayList<>();
+    boolean conf = false ;
+    private static final String USERNAME = "username";
+
 
 
     @Override
@@ -45,7 +51,8 @@ public class MainActivity extends AppCompatActivity  {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        configureAmplify();
+//        if(!conf)
+//        configureAmplify();
 
         //-------------------------------------------------------- Buttons
         Button settingsButton = findViewById(R.id.settings);
@@ -66,6 +73,37 @@ public class MainActivity extends AppCompatActivity  {
             startActivity(allTasksIntent);
         });
 
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main,menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        int id = item.getItemId();
+        logout();
+        return true;
+    }
+    private void authSession(String method) {
+        Amplify.Auth.fetchAuthSession(
+                result -> Log.i(TAG, "Auth Session => " + method + result.toString()),
+                error -> Log.e(TAG, error.toString())
+        );
+    }
+
+    private void logout (){
+        Amplify.Auth.signOut(
+                () -> {
+                    Log.i(TAG, "Signed out successfully");
+                    startActivity(new Intent(MainActivity.this, LoginActivity.class));
+                    authSession("logout");
+                    finish();
+                },
+                error -> Log.e(TAG, error.toString())
+        );
     }
 
     @Override
@@ -93,7 +131,7 @@ public class MainActivity extends AppCompatActivity  {
                         tasks = findTasksAPI(curTeam.getId());
 
                         // handler for showing tasks list from the API
-                        handler = new Handler(Looper.getMainLooper() , msg -> {
+                        handler = new Handler(Looper.getMainLooper() , msg -> { // this works when i send the message in the findTasksAPI() function
 
                             ListView tasksList = findViewById(R.id.tasksList);
                             ArrayAdapter<com.amplifyframework.datastore.generated.model.Task> taskArrayAdapter = new ArrayAdapter<Task>(
@@ -127,7 +165,7 @@ public class MainActivity extends AppCompatActivity  {
                                     startActivity(taskIntent);
                                 }
                             });
-                            return true  ;
+                            return true ; //for the handler
                         });
 //                        --------------------------------------------- picking tasks and rendering  them
                     }
@@ -173,8 +211,6 @@ public class MainActivity extends AppCompatActivity  {
                 },
                     error -> {
                     });
-
-
     }
 
     private void  changeTeamName(){
@@ -196,9 +232,6 @@ public class MainActivity extends AppCompatActivity  {
                 ModelQuery.list(Task.class),
                 success -> {
                     tasks.clear();
-                    ArrayList <Task> allTasks = new ArrayList<>();
-                    Log.i(TAG, "findTasksAPI: ->"+teamId);
-
                     if (success.hasData()) {
                         for (Task task : success.getData()) {
                             if(task.getTeamTasksId()!=null)
@@ -210,7 +243,6 @@ public class MainActivity extends AppCompatActivity  {
                         Message message = new Message();
                         message.setData(bundle);
                         handler.sendMessage(message);
-
                     }
                     },
                 notFound->{
@@ -237,11 +269,14 @@ public class MainActivity extends AppCompatActivity  {
         return tasks ;
     }
 
-    private void configureAmplify() {
+    private void configureAmplify() { // for adding plugins only once in the main activity
         try {
+            // Add this line, to include the Auth plugin.
+            Amplify.addPlugin(new AWSCognitoAuthPlugin());
             Amplify.addPlugin(new AWSApiPlugin());
             Amplify.addPlugin(new AWSDataStorePlugin());
             Amplify.configure(getApplicationContext());
+            conf = true ;
 
         } catch (AmplifyException e) {
         }
