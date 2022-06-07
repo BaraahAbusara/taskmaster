@@ -24,6 +24,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.amplifyframework.AmplifyException;
+import com.amplifyframework.analytics.AnalyticsEvent;
 import com.amplifyframework.api.aws.AWSApiPlugin;
 import com.amplifyframework.api.graphql.model.ModelQuery;
 import com.amplifyframework.auth.cognito.AWSCognitoAuthPlugin;
@@ -64,18 +65,23 @@ public class MainActivity extends AppCompatActivity  {
         settingsButton.setOnClickListener(view -> {
             Intent settingsIntent = new Intent(this, Settings.class);
             startActivity(settingsIntent);
+            analytics("settings_btn");
         });
 
         Button addTaskButton = findViewById(R.id.addTaskButton);
         addTaskButton.setOnClickListener(view -> {
             Intent addTaskIntent = new Intent(this, AddTaskAct.class);
             startActivity(addTaskIntent);
+            analytics("addTask_btn");
+
         });
 
         Button allTasksButton = findViewById(R.id.allTasksButton);
         allTasksButton.setOnClickListener(view -> {
             Intent allTasksIntent = new Intent(this, AllTasksAct.class);
             startActivity(allTasksIntent);
+            analytics("allTasks_btn");
+
         });
 
         changeTeamName();
@@ -274,5 +280,15 @@ public class MainActivity extends AppCompatActivity  {
                 }
         );
         return tasks ;
+    }
+
+    private void analytics (String eventName){
+        AnalyticsEvent event = AnalyticsEvent.builder()
+                .name(eventName)
+                .addProperty("Successful", true)
+                .addProperty("ProcessDuration", 792)
+                .build();
+
+        Amplify.Analytics.recordEvent(event);
     }
 }

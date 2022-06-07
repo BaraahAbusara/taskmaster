@@ -2,16 +2,24 @@ package com.example.taskmaster;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.amplifyframework.core.Amplify;
+import com.amplifyframework.predictions.models.LanguageType;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 public class TaskDetailActivity extends AppCompatActivity {
     private static final String TAG = "test";
@@ -25,6 +33,13 @@ public class TaskDetailActivity extends AppCompatActivity {
         changeTaskName();
         changeTaskBody();
         changeTaskState();
+        translate();
+
+//        Amplify.Predictions.convertTextToSpeech(
+//                "I like to eat spaghetti",
+//                result -> playAudio(result.getAudioData()),
+//                error -> Log.e("MyAmplifyApp", "Conversion failed", error)
+//        );
 
         imageKey = getIntent().getStringExtra("imageKey");
 
@@ -33,6 +48,27 @@ public class TaskDetailActivity extends AppCompatActivity {
         else
             Log.i(TAG, "onCreate: imageKey is null->"+imageKey);
 
+    }
+
+
+    private void translate() {
+        Button translate_btn =  findViewById(R.id.translate_btn);
+        translate_btn.setOnClickListener(view-> {
+
+                    TextView mTranslatedBody = findViewById(R.id.translated_body);
+                    TextView mBody = findViewById(R.id.body);
+            Amplify.Predictions.translateText(
+                    mBody.getText().toString(),
+                    LanguageType.ENGLISH,
+                    LanguageType.ARABIC,
+                    result -> {
+                        Log.i("MyAmplifyApp", result.getTranslatedText());
+                        mTranslatedBody.setText(result.getTranslatedText());
+                    },
+                    error -> Log.e("MyAmplifyApp", "Translation failed", error)
+            );
+        }
+        );
     }
 
     private void changeTaskName() {
@@ -44,6 +80,7 @@ public class TaskDetailActivity extends AppCompatActivity {
         TextView mBody = findViewById(R.id.body);
         String body = getIntent().getStringExtra("body");
         mBody.setText(body);
+
     }
     private void changeTaskState() {
         TextView mState = findViewById(R.id.state);
@@ -64,10 +101,26 @@ public class TaskDetailActivity extends AppCompatActivity {
                     ImageView image = findViewById(R.id.task_image);
                     Bitmap bitmap = BitmapFactory.decodeFile(getApplicationContext().getFilesDir()+"/"+result.getFile().getName());
                     image.setImageBitmap(bitmap);
-
-
                 },
                 error -> Log.e(TAG,  "Download Failure", error)
         );
     }
+
+//    private void playAudio(InputStream data) {
+//        File mp3File = new File(getCacheDir(), "audio.mp3");
+//
+//        try (OutputStream out = new FileOutputStream(mp3File)) {
+//            byte[] buffer = new byte[8 * 1_024];
+//            int bytesRead;
+//            while ((bytesRead = data.read(buffer)) != -1) {
+//                out.write(buffer, 0, bytesRead);
+//            }
+//            mp.reset();
+//            mp.setOnPreparedListener(MediaPlayer::start);
+//            mp.setDataSource(new FileInputStream(mp3File).getFD());
+//            mp.prepareAsync();
+//        } catch (IOException error) {
+//            Log.e("MyAmplifyApp", "Error writing audio file", error);
+//        }
+//    }
 }
