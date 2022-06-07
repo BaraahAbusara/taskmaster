@@ -7,6 +7,7 @@ type Task @model {
   title: String!
   body: String!
   status: String!
+  ImagePath : String
 }
 
 type Team @model {

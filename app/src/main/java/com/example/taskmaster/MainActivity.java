@@ -37,13 +37,17 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity  {
 
-    public static final String EXTRA_MESSAGE = "com.example.taskmaster.MESSAGE";
     private static final String TAG = "test";
+    private static final String TEAM_NAME = "teamName";
     private Handler handler;
-    List<com.amplifyframework.datastore.generated.model.Task> tasks= new ArrayList<>();
-    boolean conf = false ;
     private static final String USERNAME = "username";
 
+
+
+
+
+
+    List<com.amplifyframework.datastore.generated.model.Task> tasks= new ArrayList<>();
 
 
     @Override
@@ -51,8 +55,9 @@ public class MainActivity extends AppCompatActivity  {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-//        if(!conf)
-//        configureAmplify();
+//        TextView username = findViewById(R.id.usernameHeader);
+//        String usernameText = getIntent().getStringExtra(USERNAME);
+//        username.setText(usernameText);
 
         //-------------------------------------------------------- Buttons
         Button settingsButton = findViewById(R.id.settings);
@@ -72,6 +77,9 @@ public class MainActivity extends AppCompatActivity  {
             Intent allTasksIntent = new Intent(this, AllTasksAct.class);
             startActivity(allTasksIntent);
         });
+
+        changeTeamName();
+        changeUsername();
 
     }
 
@@ -114,12 +122,13 @@ public class MainActivity extends AppCompatActivity  {
     @Override
     protected void onResume() {
         super.onResume();
-        changeUsername();
-        changeTeamName();
-        //printing tasks
+
+        //printing team name
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         String teamName = sharedPreferences.getString(Settings.TEAM_NAME,"All");
 
+
+        //printing tasks
         Amplify.API.query(ModelQuery
                         .list(Team.class, Team.NAME.eq(teamName)),
                 success-> {
@@ -159,9 +168,16 @@ public class MainActivity extends AppCompatActivity  {
                                 @Override
                                 public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                                     Intent taskIntent = new Intent(getApplicationContext(),TaskDetailActivity.class);
+
+                                    Log.i(TAG, "onItemClick: "+tasks.get(i).getImagePath());
+
+
                                     taskIntent.putExtra("title",tasks.get(i).getTitle());
                                     taskIntent.putExtra("body",tasks.get(i).getBody());
                                     taskIntent.putExtra("state",tasks.get(i).getStatus());
+                                    taskIntent.putExtra("imageKey",tasks.get(i).getImagePath());
+
+
                                     startActivity(taskIntent);
                                 }
                             });
@@ -197,35 +213,6 @@ public class MainActivity extends AppCompatActivity  {
 
     @SuppressLint("SetTextI18n")
 
-    private void findTeamId(){
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        String teamName = sharedPreferences.getString(Settings.TEAM_NAME,"All");
-        String[] teamId = new String[1] ;
-        Amplify.API.query(ModelQuery
-                        .list(Team.class, Team.NAME.eq(teamName)),
-                success-> {
-                    for (Team curTeam :
-                            success.getData()) {
-                        teamId[0] = curTeam.getId();
-                    }
-                },
-                    error -> {
-                    });
-    }
-
-    private void  changeTeamName(){
-        //        receive the team name from settings
-        TextView mTeamName = findViewById(R.id.team_name);
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        mTeamName.setText(sharedPreferences.getString(Settings.TEAM_NAME,"All")+ " Tasks");
-    }
-
-    private void changeUsername(){
-//        receive the username from settings
-        TextView mUsernameHeader = findViewById(R.id.usernameHeader);
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        mUsernameHeader.setText(sharedPreferences.getString(Settings.USERNAME,"My")+ " Tasks");
-    }
 
     private List<com.amplifyframework.datastore.generated.model.Task> findTasksAPI (String teamId){
         Amplify.API.query(
@@ -250,6 +237,26 @@ public class MainActivity extends AppCompatActivity  {
     return tasks;
     }
 
+    private void  changeTeamName(){
+        //        receive the team name from settings
+        TextView mTeamName = findViewById(R.id.team_name);
+//        String teamNameText = getIntent().getStringExtra(TEAM_NAME);
+//        mTeamName.setText(teamNameText);
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        mTeamName.setText(sharedPreferences.getString(Settings.TEAM_NAME,"All")+ " Tasks");
+    }
+
+    private void  changeUsername(){
+        //        receive the team name from settings
+        TextView mTeamName = findViewById(R.id.usernameHeader);
+//        String teamNameText = getIntent().getStringExtra(TEAM_NAME);
+//        mTeamName.setText(teamNameText);
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        mTeamName.setText(sharedPreferences.getString(LoginActivity.USERNAME,"My Tasks"));
+    }
+
+
+
     private List<com.amplifyframework.datastore.generated.model.Task> findTasksDataStore (){
         List<com.amplifyframework.datastore.generated.model.Task> tasks = new ArrayList<>();
 
@@ -268,18 +275,4 @@ public class MainActivity extends AppCompatActivity  {
         );
         return tasks ;
     }
-
-    private void configureAmplify() { // for adding plugins only once in the main activity
-        try {
-            // Add this line, to include the Auth plugin.
-            Amplify.addPlugin(new AWSCognitoAuthPlugin());
-            Amplify.addPlugin(new AWSApiPlugin());
-            Amplify.addPlugin(new AWSDataStorePlugin());
-            Amplify.configure(getApplicationContext());
-            conf = true ;
-
-        } catch (AmplifyException e) {
-        }
-    }
-
 }

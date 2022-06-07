@@ -1,5 +1,6 @@
 package com.example.taskmaster;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -15,10 +16,12 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class Settings extends AppCompatActivity {
 
-    public static final String USERNAME = "username";
-    public static final String TEAM_NAME = "teamName";
+
     private static final String TAG = "test";
-    private EditText mUsernameEditText;
+    public static final String TEAM_NAME = "teamName";
+
+
+    //    private EditText mUsernameEditText;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,33 +50,27 @@ public class Settings extends AppCompatActivity {
             }
         });
 
-        Button button = findViewById(R.id.save_btn);
-
-        button.setOnClickListener(view -> {
-            mUsernameEditText = findViewById(R.id.usernameInput);
-            String username = mUsernameEditText.getText().toString();
-            saveUsername(username);
-            Toast.makeText(this, "username added "+username, Toast.LENGTH_SHORT).show();
-        });
+//        Button button = findViewById(R.id.save_btn);
+//
+//        button.setOnClickListener(view -> {
+//            mUsernameEditText = findViewById(R.id.usernameInput);
+//            String username = mUsernameEditText.getText().toString();
+////            saveUsername(username);
+//            Toast.makeText(this, "username added "+username, Toast.LENGTH_SHORT).show();
+//        });
 
         Button save_team_btn = findViewById(R.id.save_team_btn);
         save_team_btn.setOnClickListener(view->{
             Spinner mTeamNameSpinner = findViewById(R.id.team_spinner);
             String teamName = mTeamNameSpinner.getSelectedItem().toString();
             saveTeamName(teamName);
+//            Intent intent = new Intent(Settings.this, MainActivity.class);
+//            intent.putExtra(TEAM_NAME , teamName);
+
             Toast.makeText(this, "teamName changed to "+teamName, Toast.LENGTH_SHORT).show();
 
+
         });
-    }
-
-    private void saveUsername (String username){
-
-        //create sharedPreference and set up an editor
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        SharedPreferences.Editor preferenceEditor = sharedPreferences.edit();
-        //save
-        preferenceEditor.putString(USERNAME,username);
-        preferenceEditor.apply();
     }
 
     private void saveTeamName (String teamName){
@@ -85,5 +82,16 @@ public class Settings extends AppCompatActivity {
         preferenceEditor.putString(TEAM_NAME,teamName);
         preferenceEditor.apply();
     }
+
+    //    private void saveUsername (String username){
+//
+//        //create sharedPreference and set up an editor
+//        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+//        SharedPreferences.Editor preferenceEditor = sharedPreferences.edit();
+//        //save
+//        preferenceEditor.putString(USERNAME,username);
+//        preferenceEditor.apply();
+//    }
+
 
 }
