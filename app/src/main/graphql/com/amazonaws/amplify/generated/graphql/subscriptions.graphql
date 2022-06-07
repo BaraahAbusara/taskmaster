@@ -5,6 +5,7 @@ subscription OnCreateTask {
     title
     body
     status
+    ImagePath
     createdAt
     updatedAt
     teamTasksId
@@ -16,6 +17,7 @@ subscription OnUpdateTask {
     title
     body
     status
+    ImagePath
     createdAt
     updatedAt
     teamTasksId
@@ -27,6 +29,7 @@ subscription OnDeleteTask {
     title
     body
     status
+    ImagePath
     createdAt
     updatedAt
     teamTasksId
@@ -42,6 +45,7 @@ subscription OnCreateTeam {
         title
         body
         status
+        ImagePath
         createdAt
         updatedAt
         teamTasksId
@@ -62,6 +66,7 @@ subscription OnUpdateTeam {
         title
         body
         status
+        ImagePath
         createdAt
         updatedAt
         teamTasksId
@@ -82,6 +87,7 @@ subscription OnDeleteTeam {
         title
         body
         status
+        ImagePath
         createdAt
         updatedAt
         teamTasksId

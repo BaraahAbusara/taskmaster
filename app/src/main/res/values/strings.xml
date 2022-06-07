@@ -34,5 +34,6 @@
     <string name="username">Username</string>
     <string name="enter_the_verification_code">Enter the verification code</string>
     <string name="logout">Logout</string>
+    <string name="add_image">Add Image</string>
 
 </resources>

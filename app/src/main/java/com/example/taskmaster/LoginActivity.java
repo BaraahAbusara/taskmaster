@@ -1,7 +1,9 @@
 package com.example.taskmaster;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -22,10 +24,11 @@ import com.amplifyframework.api.aws.AWSApiPlugin;
 import com.amplifyframework.auth.cognito.AWSCognitoAuthPlugin;
 import com.amplifyframework.core.Amplify;
 import com.amplifyframework.datastore.AWSDataStorePlugin;
+import com.amplifyframework.storage.s3.AWSS3StoragePlugin;
 
 public class LoginActivity extends AppCompatActivity {
     public static final String TAG = MainActivity.class.getSimpleName();
-    private static final String USERNAME = "username";
+    public static final String USERNAME = "username";
     boolean conf = false ;
     ProgressBar loadingProgressBar;
 
@@ -78,10 +81,6 @@ public class LoginActivity extends AppCompatActivity {
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
                     loginButton.setEnabled(true);
-
-                    //usernameEditText.getText().toString()
-                    // passwordEditText.getText().toString()
-
                 }
                 return false;
             }
@@ -111,6 +110,7 @@ public class LoginActivity extends AppCompatActivity {
         try {
             // Add this line, to include the Auth plugin.
             Amplify.addPlugin(new AWSCognitoAuthPlugin());
+            Amplify.addPlugin(new AWSS3StoragePlugin());
             Amplify.addPlugin(new AWSApiPlugin());
             Amplify.addPlugin(new AWSDataStorePlugin());
             Amplify.configure(getApplicationContext());
@@ -133,13 +133,23 @@ public class LoginActivity extends AppCompatActivity {
                     Log.i(TAG, result.isSignInComplete() ? "Sign in succeeded" : "Sign in not complete");
                     loadingProgressBar.setVisibility(View.INVISIBLE);
                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                    intent.putExtra(USERNAME , username);
+                    saveUsername(username);
+//                    intent.putExtra(USERNAME , username);
+//                    Log.i(TAG, "login: "+username);
                     startActivity(intent);
 
                 },
                 error -> Log.e(TAG, error.toString())
         );
     }
+    private void saveUsername (String username){
 
+        //create sharedPreference and set up an editor
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences.Editor preferenceEditor = sharedPreferences.edit();
+        //save
+        preferenceEditor.putString(USERNAME,username);
+        preferenceEditor.apply();
+    }
 
 }

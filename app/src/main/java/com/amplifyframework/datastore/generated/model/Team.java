@@ -49,7 +49,7 @@ public final class Team implements Model {
       return updatedAt;
   }
   
-  public Team(String id, String name) {
+  private Team(String id, String name) {
     this.id = id;
     this.name = name;
   }
