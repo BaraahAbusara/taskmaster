@@ -62,13 +62,6 @@ In the addTask activity the user now have to specify what team the added task be
 
 ## lab 34 - Publishing to the Play Store
 
-# Class-34 : Monetization
-
-
-In this file I will be summarizing what I have learnt in class-34 reading notes which included the following resources :
-- [Google’s app publishing guide](https://developer.android.com/studio/publish)
-
-
 ### Google’s app publishing guide
 
 Publishing your application is the act of making the application able to be installed and used from other users , **but how can we do that?**
@@ -126,3 +119,11 @@ In this version the user is able to upload an image to his tasks from his device
 ![Add Task With Image](./screenshots/addTaskWithImage.jpg)
 And the user is able to see that image in the task's details activity. 
 ![Task With Image](./screenshots/taskWithImage.jpg)
+
+
+## Version 12 : lab 41 : Intent Filters
+
+In this lab the user is able to translate the task's body from English to Arabic and is able to hear it (text is converted to to speech) all that using  Amplify Predictions library.
+-![task with translation and sound](./screenshots/taskWithTreanslationAndSound.jpg)
+In addition to that we are abe to analyse user experience inside our application using Amazon Pinpoint.
+-![analytics](./screenshots/analytics.png)
