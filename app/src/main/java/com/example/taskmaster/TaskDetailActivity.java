@@ -6,6 +6,7 @@ import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -23,7 +24,11 @@ import java.io.OutputStream;
 
 public class TaskDetailActivity extends AppCompatActivity {
     private static final String TAG = "test";
+
+    private final MediaPlayer mp = new MediaPlayer();
+
     String imageKey ;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,14 +39,10 @@ public class TaskDetailActivity extends AppCompatActivity {
         changeTaskBody();
         changeTaskState();
         translate();
-
-//        Amplify.Predictions.convertTextToSpeech(
-//                "I like to eat spaghetti",
-//                result -> playAudio(result.getAudioData()),
-//                error -> Log.e("MyAmplifyApp", "Conversion failed", error)
-//        );
+        soundOn();
 
         imageKey = getIntent().getStringExtra("imageKey");
+
 
         if(imageKey!=null)
         pictureDownloadAndView(imageKey);
@@ -50,6 +51,23 @@ public class TaskDetailActivity extends AppCompatActivity {
 
     }
 
+
+
+    private void soundOn() {
+        ImageButton sound = findViewById(R.id.sound_btn);
+        sound.setOnClickListener(view -> {
+            TextView body = findViewById(R.id.body);
+            String textToRead = body.getText().toString();
+            Amplify.Predictions.convertTextToSpeech(
+                    textToRead,
+                    result -> {
+                        playAudio(result.getAudioData());
+                        Log.i(TAG, "soundOn: "+result);
+                    },
+                    error -> Log.e("MyAmplifyApp", "Conversion failed", error)
+            );
+        });
+    }
 
     private void translate() {
         Button translate_btn =  findViewById(R.id.translate_btn);
@@ -64,6 +82,8 @@ public class TaskDetailActivity extends AppCompatActivity {
                     result -> {
                         Log.i("MyAmplifyApp", result.getTranslatedText());
                         mTranslatedBody.setText(result.getTranslatedText());
+                        mTranslatedBody.setEnabled(true);
+
                     },
                     error -> Log.e("MyAmplifyApp", "Translation failed", error)
             );
@@ -106,21 +126,21 @@ public class TaskDetailActivity extends AppCompatActivity {
         );
     }
 
-//    private void playAudio(InputStream data) {
-//        File mp3File = new File(getCacheDir(), "audio.mp3");
-//
-//        try (OutputStream out = new FileOutputStream(mp3File)) {
-//            byte[] buffer = new byte[8 * 1_024];
-//            int bytesRead;
-//            while ((bytesRead = data.read(buffer)) != -1) {
-//                out.write(buffer, 0, bytesRead);
-//            }
-//            mp.reset();
-//            mp.setOnPreparedListener(MediaPlayer::start);
-//            mp.setDataSource(new FileInputStream(mp3File).getFD());
-//            mp.prepareAsync();
-//        } catch (IOException error) {
-//            Log.e("MyAmplifyApp", "Error writing audio file", error);
-//        }
-//    }
+    private void playAudio(InputStream data) {
+        File mp3File = new File(getCacheDir(), "audio.mp3");
+
+        try (OutputStream out = new FileOutputStream(mp3File)) {
+            byte[] buffer = new byte[8 * 1_024];
+            int bytesRead;
+            while ((bytesRead = data.read(buffer)) != -1) {
+                out.write(buffer, 0, bytesRead);
+            }
+            mp.reset();
+            mp.setOnPreparedListener(MediaPlayer::start);
+            mp.setDataSource(new FileInputStream(mp3File).getFD());
+            mp.prepareAsync();
+        } catch (IOException error) {
+            Log.e("MyAmplifyApp", "Error writing audio file", error);
+        }
+    }
 }
