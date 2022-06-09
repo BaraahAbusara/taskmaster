@@ -31,7 +31,7 @@
             android:label="@string/title_activity_signup" />
         <activity
             android:name=".MainActivity"
-            android:exported="false"></activity>
+            android:exported="false" />
         <activity
             android:name=".AllTasksAct"
             android:exported="false"
@@ -48,6 +48,10 @@
             android:name=".TaskDetailActivity"
             android:exported="false"
             android:parentActivityName=".MainActivity" />
+
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-5669156223127076~9658513302"/>
     </application>
 
 </manifest>
