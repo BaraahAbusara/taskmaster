@@ -121,9 +121,20 @@ And the user is able to see that image in the task's details activity.
 ![Task With Image](./screenshots/taskWithImage.jpg)
 
 
-## Version 12 : lab 41 : Intent Filters
+## Version 12 : lab 41 - Intent Filters
 
 In this lab the user is able to translate the task's body from English to Arabic and is able to hear it (text is converted to to speech) all that using  Amplify Predictions library.
 -![task with translation and sound](./screenshots/taskWithTreanslationAndSound.jpg)
 In addition to that we are abe to analyse user experience inside our application using Amazon Pinpoint.
 -![analytics](./screenshots/analytics.png)
+
+## Version 13 : lab 42 - Monetization And AdMob Ads
+
+For this lab , my app is integrating a few different kinds of ads via Google AdMob.
+![Banner Ad](./screenshots/ALLAdWorked.jpg)
+- Banner Ad 
+![Banner Ad](./screenshots/286459749_549171026766458_7895568061373880289_n.jpg)
+- Interstitial Ad
+![Interstitial Ad](./screenshots/286309664_392437225998706_6342190625809669584_n.jpg)
+- Rewarded Ad
+![Rewarded Ad](./screenshots/286413531_1145456329639901_8881258982430320953_n.jpg)

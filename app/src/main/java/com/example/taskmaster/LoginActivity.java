@@ -28,6 +28,9 @@ import com.amplifyframework.core.Amplify;
 import com.amplifyframework.datastore.AWSDataStorePlugin;
 import com.amplifyframework.predictions.aws.AWSPredictionsPlugin;
 import com.amplifyframework.storage.s3.AWSS3StoragePlugin;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.initialization.InitializationStatus;
+import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 
 public class LoginActivity extends AppCompatActivity {
     public static final String TAG = MainActivity.class.getSimpleName();
@@ -111,6 +114,11 @@ public class LoginActivity extends AppCompatActivity {
 
     private void configureAmplify() { // for adding plugins only once in the main activity
         try {
+            MobileAds.initialize(this, new OnInitializationCompleteListener() {
+                @Override
+                public void onInitializationComplete(InitializationStatus initializationStatus) {
+                }
+            });
             // Add this line, to include the Auth plugin.
             Amplify.addPlugin(new AWSCognitoAuthPlugin());
             Amplify.addPlugin(new AWSPinpointAnalyticsPlugin(getApplication()));
@@ -123,6 +131,7 @@ public class LoginActivity extends AppCompatActivity {
 
         } catch (AmplifyException e) {
         }
+
     }
     private void authSession(String method) {
         Amplify.Auth.fetchAuthSession(
