@@ -29,9 +29,11 @@ import java.io.BufferedOutputStream;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileDescriptor;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 
 public class AddTaskAct extends AppCompatActivity {
@@ -78,6 +80,7 @@ public class AddTaskAct extends AppCompatActivity {
 
             }
         });
+        handleSharedImage();
 
         Button uploadImageBtn = findViewById(R.id.addImageBtn);
         uploadImageBtn.setOnClickListener(view -> {
@@ -85,7 +88,6 @@ public class AddTaskAct extends AppCompatActivity {
         });
 
         Button button = findViewById(R.id.button);
-
         //find the team
         button.setOnClickListener(view -> {
             String team = taskTeamSelector.getSelectedItem().toString();
@@ -101,7 +103,6 @@ public class AddTaskAct extends AppCompatActivity {
                             String body = bodyField.getText().toString();
 
                             String state = taskStateSelector.getSelectedItem().toString();
-
                             //----------------------------------------------------------------
 
                             Log.i(TAG, "onCreate: imageKey is => "+image);
@@ -136,6 +137,52 @@ public class AddTaskAct extends AppCompatActivity {
 
 
     }
+    private void handleSharedImage (){
+        Intent intent = getIntent();
+        String type = intent.getType();
+        if(intent != null && intent.getType()!=null && type.startsWith("image/")){
+            Uri currentUri = intent.getParcelableExtra(Intent.EXTRA_STREAM);
+            Log.i(TAG, "handleSharedImage: currentUri last path segment =>"+currentUri.getLastPathSegment().substring(currentUri.getLastPathSegment().lastIndexOf("/")+1));
+            if(!currentUri.equals(null)){
+
+                InputStream inputStream = null;
+                try {
+                    inputStream = getContentResolver().openInputStream(currentUri);
+
+                } catch (FileNotFoundException err) {
+                    Log.e(TAG,  err.getMessage());
+                }
+
+                // Get photo picker response for single select.
+                // Do stuff with the photo/video URI.
+                Log.i(TAG, "onActivityResult: the uri is => " + currentUri);
+
+                try {
+                    Bitmap bitmap = getBitmapFromUri(currentUri);
+                    File file = new File(getApplicationContext().getFilesDir(), currentUri.getLastPathSegment().substring(currentUri.getLastPathSegment().lastIndexOf("/")+1));
+                    OutputStream os = new BufferedOutputStream(new FileOutputStream(file));
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, os);
+                    os.close();
+
+                    // uploads the file
+                    Amplify.Storage.uploadFile(
+                            currentUri.getLastPathSegment(),
+                            file,
+                            result -> {
+                                Log.i(TAG, "Successfully uploaded: " + result.getKey());
+                                image = result.getKey();
+                                Toast.makeText(getApplicationContext(), "image is uploaded", Toast.LENGTH_SHORT).show();
+                            },
+                            storageFailure -> Log.e(TAG, "Upload failed", storageFailure)
+                    );
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                return;
+
+            }
+        }
+    }
 
     private void pictureUpload() {
         // Launches photo picker in single-select mode.
@@ -145,14 +192,13 @@ public class AddTaskAct extends AppCompatActivity {
         startActivityForResult(intent, REQUEST_CODE);
     }
 
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (resultCode != Activity.RESULT_OK) {
             // Handle error
-            Log.e(TAG, "onActivityResult: Error getting image from device");
+            Log.e(TAG, "onActivityResult: Error getting image from device" + resultCode);
             return;
         }
 
@@ -191,6 +237,7 @@ public class AddTaskAct extends AppCompatActivity {
         }
     }
 
+
 //    https://stackoverflow.com/questions/2169649/get-pick-an-image-from-androids-built-in-gallery-app-programmatically
     private Bitmap getBitmapFromUri(Uri uri) throws IOException {
         ParcelFileDescriptor parcelFileDescriptor =
@@ -201,6 +248,9 @@ public class AddTaskAct extends AppCompatActivity {
 
         return image;
     }
+
+
+
 
 }
 

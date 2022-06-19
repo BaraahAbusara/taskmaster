@@ -47,6 +47,7 @@ import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity  {
 
@@ -184,6 +185,7 @@ public class MainActivity extends AppCompatActivity  {
 
 
         //printing tasks
+        if(!Objects.equals(teamName,"All"))
         Amplify.API.query(ModelQuery
                         .list(Team.class, Team.NAME.eq(teamName)),
                 success-> {
@@ -295,8 +297,7 @@ public class MainActivity extends AppCompatActivity  {
     private void  changeTeamName(){
         //        receive the team name from settings
         TextView mTeamName = findViewById(R.id.team_name);
-//        String teamNameText = getIntent().getStringExtra(TEAM_NAME);
-//        mTeamName.setText(teamNameText);
+
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         mTeamName.setText(sharedPreferences.getString(Settings.TEAM_NAME,"All")+ " Tasks");
     }
