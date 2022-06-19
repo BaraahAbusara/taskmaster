@@ -120,13 +120,21 @@ In this version the user is able to upload an image to his tasks from his device
 And the user is able to see that image in the task's details activity. 
 ![Task With Image](./screenshots/taskWithImage.jpg)
 
-
-## Version 12 : lab 41 - Intent Filters
+## Version 10 : lab 41 - Intent Filters
 
 In this lab the user is able to translate the task's body from English to Arabic and is able to hear it (text is converted to to speech) all that using  Amplify Predictions library.
 -![task with translation and sound](./screenshots/taskWithTreanslationAndSound.jpg)
 In addition to that we are abe to analyse user experience inside our application using Amazon Pinpoint.
 -![analytics](./screenshots/analytics.png)
+
+## Version 11 : lab 38 - Notifications
+
+In this version our application allows users to “share” a photo from another application and open TaskMaster, ready to upload that image as part of a new task.
+![Share an image from your gallery](./screenshots/288809051_707180420506350_6085666106203146733_n.jpg)
+![add the task with shared image](./screenshots/288437171_1200852263998369_1116713434602088382_n.jpg)
+![add the task with shared image](./screenshots/287924838_989770465054445_4002543207420612608_n.jpg)
+![view the task of shared image](./screenshots/288621057_404377178282602_6634499918493505876_n.jpg)
+
 
 ## Version 13 : lab 42 - Monetization And AdMob Ads
 
